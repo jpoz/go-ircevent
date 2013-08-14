@@ -8,6 +8,7 @@ import (
 	"crypto/tls"
 	"log"
 	"net"
+	"sync"
 	"time"
 )
 
@@ -29,6 +30,7 @@ type Connection struct {
 	server      string
 	events      map[string][]func(*Event)
 
+  lastMessageMutex sync.Mutex
 	lastMessage time.Time
 
 	VerboseCallbackHandler bool
