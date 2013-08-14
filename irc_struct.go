@@ -35,6 +35,7 @@ type Connection struct {
 	registered  bool
 	events      map[string]map[string]func(*Event)
 
+  lastMessageMutex sync.Mutex
 	lastMessage time.Time
 
 	VerboseCallbackHandler bool
