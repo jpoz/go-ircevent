@@ -387,6 +387,10 @@ func (irc *Connection) Connect(server string) error {
 	return nil
 }
 
+func (irc *Connection) SetLogger(newLog *log.Logger) {
+	irc.log = newLog
+}
+
 // Create a connection with the (publicly visible) nickname and username.
 // The nickname is later used to address the user. Returns nil if nick
 // or user are empty.
