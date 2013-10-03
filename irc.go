@@ -29,9 +29,9 @@ func (irc *Connection) readLoop() {
 			break
 		}
 
-    irc.lastMessageMutex.Lock()
+		irc.lastMessageMutex.Lock()
 		irc.lastMessage = time.Now()
-    irc.lastMessageMutex.Unlock()
+		irc.lastMessageMutex.Unlock()
 
 		msg = msg[:len(msg)-2] //Remove \r\n
 		event := &Event{Raw: msg}
@@ -95,11 +95,11 @@ func (irc *Connection) pingLoop() {
 		select {
 		case <-ticker.C:
 			//Ping if we haven't received anything from the server within 4 minutes
-      irc.lastMessageMutex.Lock()
+			irc.lastMessageMutex.Lock()
 			if time.Since(irc.lastMessage) >= (4 * time.Minute) {
 				irc.SendRawf("PING %d", time.Now().UnixNano())
 			}
-      irc.lastMessageMutex.Unlock()
+			irc.lastMessageMutex.Unlock()
 		case <-ticker2.C:
 			//Ping every 15 minutes.
 			irc.SendRawf("PING %d", time.Now().UnixNano())
@@ -223,6 +223,10 @@ func (irc *Connection) Connect(server string) error {
 	irc.pwrite <- fmt.Sprintf("NICK %s\r\n", irc.nick)
 	irc.pwrite <- fmt.Sprintf("USER %s 0.0.0.0 0.0.0.0 :%s\r\n", irc.user, irc.user)
 	return nil
+}
+
+func (irc *Connection) SetLogger(newLog *log.Logger) {
+	irc.log = newLog
 }
 
 func IRC(nick, user string) *Connection {
