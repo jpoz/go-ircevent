@@ -28,6 +28,8 @@ type Connection struct {
 	user        string
 	registered  bool
 	server      string
+
+	eventsMutex sync.Mutex
 	events      map[string][]func(*Event)
 
   lastMessageMutex sync.Mutex
