@@ -39,6 +39,8 @@ type Connection struct {
 	log                    *log.Logger
 
 	stopped bool
+
+	sync.Mutex
 }
 
 type Event struct {
@@ -50,4 +52,6 @@ type Event struct {
 	Source    string //<host>
 	User      string //<usr>
 	Arguments []string
+
+	sync.Mutex
 }
