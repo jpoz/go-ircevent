@@ -23,7 +23,7 @@ type Connection struct {
 	Timeout   time.Duration
 	PingFreq  time.Duration
 	KeepAlive time.Duration
-	Server      string
+	Server    string
 
 	socket net.Conn
 	pwrite chan string
@@ -33,10 +33,13 @@ type Connection struct {
 	nickcurrent string //The nickname we currently have.
 	user        string
 	registered  bool
-	events      map[string]map[string]func(*Event)
 
-  lastMessageMutex sync.Mutex
-	lastMessage time.Time
+	eventsMutex sync.Mutex
+	events      map[string]map[string]func(*Event)
+	server      string
+
+	lastMessageMutex sync.Mutex
+	lastMessage      time.Time
 
 	VerboseCallbackHandler bool
 	Log                    *log.Logger
