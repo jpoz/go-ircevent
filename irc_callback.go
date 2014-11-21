@@ -215,6 +215,12 @@ func (irc *Connection) setupCallbacks() {
 	// 1: RPL_WELCOME "Welcome to the Internet Relay Network <nick>!<user>@<host>"
 	// Set irc.nickcurrent to the actually used nick in this connection.
 	irc.AddCallback("001", func(e *Event) {
+		e.Lock()
+		defer e.Unlock()
+
+		irc.Lock()
+		defer irc.Unlock()
+
 		irc.nickcurrent = e.Arguments[0]
 	})
 }

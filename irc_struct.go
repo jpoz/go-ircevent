@@ -45,6 +45,8 @@ type Connection struct {
 	Log                    *log.Logger
 
 	stopped bool
+
+	sync.Mutex
 }
 
 // A struct to represent an event.
@@ -57,6 +59,7 @@ type Event struct {
 	User       string //<usr>
 	Arguments  []string
 	Connection *Connection
+	sync.Mutex
 }
 
 // Retrieve the last message from Event arguments.

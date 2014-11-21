@@ -198,6 +198,7 @@ func (irc *Connection) Loop() {
 // RFC 1459 details: https://tools.ietf.org/html/rfc1459#section-4.1.6
 func (irc *Connection) Quit() {
 	irc.SendRaw("QUIT")
+	irc.Lock()
 	irc.stopped = true
 }
 
