@@ -32,8 +32,8 @@ type Connection struct {
 	eventsMutex sync.Mutex
 	events      map[string][]func(*Event)
 
-  lastMessageMutex sync.Mutex
-	lastMessage time.Time
+	lastMessageMutex sync.Mutex
+	lastMessage      time.Time
 
 	VerboseCallbackHandler bool
 	log                    *log.Logger
