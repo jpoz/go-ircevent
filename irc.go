@@ -118,20 +118,33 @@ func (irc *Connection) pingLoop() {
 }
 
 func (irc *Connection) Loop() {
-	for !irc.stopped {
-		err := <-irc.Error
-		if irc.stopped {
-			break
+	for {
+		irc.Lock()
+		stopped := irc.stopped
+		irc.Unlock()
+
+		if !stopped {
+			err := <-irc.Error
+
+			irc.Lock()
+			stopped = irc.stopped
+			irc.Unlock()
+
+			if stopped {
+				break
+			}
+			irc.log.Printf("Error: %s\n", err)
+			irc.Disconnect()
+			irc.Connect(irc.server)
 		}
-		irc.log.Printf("Error: %s\n", err)
-		irc.Disconnect()
-		irc.Connect(irc.server)
 	}
 }
 
 func (irc *Connection) Quit() {
 	irc.SendRaw("QUIT")
+	irc.Lock()
 	irc.stopped = true
+	irc.Unlock()
 	irc.Disconnect()
 }
 

@@ -28,6 +28,8 @@ type Connection struct {
 	user        string
 	registered  bool
 	server      string
+
+	eventsMutex sync.Mutex
 	events      map[string][]func(*Event)
 
   lastMessageMutex sync.Mutex
@@ -37,6 +39,8 @@ type Connection struct {
 	log                    *log.Logger
 
 	stopped bool
+
+	sync.Mutex
 }
 
 type Event struct {
@@ -48,4 +52,6 @@ type Event struct {
 	Source    string //<host>
 	User      string //<usr>
 	Arguments []string
+
+	sync.Mutex
 }

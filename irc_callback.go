@@ -9,6 +9,7 @@ import (
 func (irc *Connection) AddCallback(eventcode string, callback func(*Event)) {
 	eventcode = strings.ToUpper(eventcode)
 
+	irc.eventsMutex.Lock()
 	if _, ok := irc.events[eventcode]; ok {
 		irc.events[eventcode] = append(irc.events[eventcode], callback)
 
@@ -16,6 +17,7 @@ func (irc *Connection) AddCallback(eventcode string, callback func(*Event)) {
 		irc.events[eventcode] = make([]func(*Event), 1)
 		irc.events[eventcode][0] = callback
 	}
+	irc.eventsMutex.Unlock()
 }
 
 func (irc *Connection) ReplaceCallback(eventcode string, i int, callback func(*Event)) {
@@ -57,6 +59,7 @@ func (irc *Connection) RunCallbacks(event *Event) {
 		}
 	}
 
+	irc.eventsMutex.Lock()
 	if callbacks, ok := irc.events[event.Code]; ok {
 		if irc.VerboseCallbackHandler {
 			irc.log.Printf("%v (%v) >> %#v\n", event.Code, len(callbacks), event)
@@ -69,6 +72,7 @@ func (irc *Connection) RunCallbacks(event *Event) {
 	} else if irc.VerboseCallbackHandler {
 		irc.log.Printf("%v (0) >> %#v\n", event.Code, event)
 	}
+	irc.eventsMutex.Unlock()
 }
 
 func (irc *Connection) setupCallbacks() {
@@ -125,6 +129,12 @@ func (irc *Connection) setupCallbacks() {
 	})
 
 	irc.AddCallback("001", func(e *Event) {
+		e.Lock()
+		defer e.Unlock()
+
+		irc.Lock()
+		defer irc.Unlock()
+
 		irc.nickcurrent = e.Arguments[0]
 	})
 }
