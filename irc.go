@@ -117,20 +117,25 @@ func (irc *Connection) pingLoop() {
 	}
 }
 
+func (irc *Connection) Stopped() bool {
+	irc.Lock()
+	stopped := irc.stopped
+	irc.Unlock()
+	return stopped
+}
+
+func (irc *Connection) SetStopped(value bool) {
+	irc.Lock()
+	irc.stopped = value
+	irc.Unlock()
+}
+
 func (irc *Connection) Loop() {
 	for {
-		irc.Lock()
-		stopped := irc.stopped
-		irc.Unlock()
-
-		if !stopped {
+		if !irc.Stopped() {
 			err := <-irc.Error
 
-			irc.Lock()
-			stopped = irc.stopped
-			irc.Unlock()
-
-			if stopped {
+			if irc.Stopped() {
 				break
 			}
 			irc.log.Printf("Error: %s\n", err)
@@ -142,9 +147,7 @@ func (irc *Connection) Loop() {
 
 func (irc *Connection) Quit() {
 	irc.SendRaw("QUIT")
-	irc.Lock()
-	irc.stopped = true
-	irc.Unlock()
+	irc.SetStopped(true)
 	irc.Disconnect()
 }
 
@@ -209,7 +212,7 @@ func (irc *Connection) Reconnect() error {
 
 func (irc *Connection) Connect(server string) error {
 	irc.server = server
-	irc.stopped = false
+	irc.SetStopped(false)
 
 	var err error
 	if irc.UseTLS {
