@@ -119,14 +119,15 @@ func (irc *Connection) pingLoop() {
 
 func (irc *Connection) Stopped() bool {
 	irc.Lock()
-	defer irc.Unlock()
-	return irc.stopped
+	stopped := irc.stopped
+	irc.Unlock()
+	return stopped
 }
 
 func (irc *Connection) SetStopped(value bool) {
 	irc.Lock()
-	defer irc.Unlock()
 	irc.stopped = value
+	irc.Unlock()
 }
 
 func (irc *Connection) Loop() {
